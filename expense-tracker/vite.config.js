@@ -1,16 +1,8 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import { nodePolyfills } from 'vite-plugin-node-polyfills'
 
 export default defineConfig({
-  plugins: [
-    react(),
-    nodePolyfills()
-  ],
-  server: {
-    port: 5173,
-    open: true
-  },
+  plugins: [react()],
   build: {
     outDir: 'dist',
     sourcemap: false,
@@ -29,16 +21,6 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': '/src'
-    }
-  },
-  css: {
-    preprocessorOptions: {
-      scss: {
-        additionalData: `@import "./src/styles/variables.scss";`
-      }
-    },
-    modules: {
-      localsConvention: 'camelCase'
     }
   }
 })
