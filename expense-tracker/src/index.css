@@ -1,3 +1,57 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+@import 'react-toastify/dist/ReactToastify.css';
+
+@layer base {
+    :root {
+        --background: 0 0% 100%;
+        --foreground: 222.2 84% 4.9%;
+    }
+
+    body {
+        @apply transition-colors duration-300;
+    }
+}
+
+@layer components {
+    .dark {
+        --background: 240 10% 3.9%;
+        --foreground: 0 0% 98%;
+        color-scheme: dark;
+    }
+
+    .dark body {
+        @apply bg-dark text-dark-text;
+    }
+
+    .dark-mode {
+        @apply bg-dark;
+    }
+
+    .dark .dark-card {
+        @apply bg-dark-card border-dark-border-300;
+    }
+
+    .theme-transition {
+        @apply transition-colors duration-300;
+    }
+}
+
+@layer utilities {
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-fadeIn {
+        animation: fadeIn 0.3s ease-in-out;
+    }
+}

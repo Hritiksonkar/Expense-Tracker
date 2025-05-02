@@ -21,6 +21,29 @@ const expenseEmail = async () => {
   }
 };
 
+const newExpenseNotification = async (expense) => {
+  try {
+    let messageoption = {
+      from: process.env.EMAIL,
+      to: expense.userEmail,
+      subject: "New Expense Added",
+      text: `You have added a new expense:
+                Label: ${expense.label}
+                Amount: $${expense.value}
+                Date: ${expense.date}
+                
+                Your expense has been recorded successfully.`
+    };
+
+    await sendMail(messageoption);
+    return true;
+  } catch (error) {
+    console.error("Email notification error:", error);
+    return false;
+  }
+};
+
 module.exports = {
   expenseEmail,
+  newExpenseNotification
 };
