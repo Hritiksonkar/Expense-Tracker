@@ -1,17 +1,19 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { nodePolyfills } from 'vite-plugin-node-polyfills'
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    nodePolyfills()
+  ],
   server: {
     port: 5173,
     open: true
   },
   build: {
     outDir: 'dist',
-    assetsDir: 'assets',
     sourcemap: false,
-    minify: 'terser',
     rollupOptions: {
       output: {
         manualChunks: {
@@ -21,8 +23,10 @@ export default defineConfig({
       }
     }
   },
+  optimizeDeps: {
+    include: ['@mui/material', '@emotion/react', '@emotion/styled']
+  },
   resolve: {
-    extensions: ['.js', '.jsx', '.json'],
     alias: {
       '@': '/src'
     }
