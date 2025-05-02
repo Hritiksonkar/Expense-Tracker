@@ -7,6 +7,20 @@ export default defineConfig({
     port: 5173,
     open: true
   },
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
+    sourcemap: false,
+    minify: 'terser',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          charts: ['chart.js', 'react-chartjs-2', '@mui/x-charts']
+        }
+      }
+    }
+  },
   resolve: {
     extensions: ['.js', '.jsx', '.json'],
     alias: {
