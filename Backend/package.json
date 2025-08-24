@@ -1,32 +1,39 @@
 {
-  "name": "backend",
+  "name": "expense-tracker-backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "Backend for Expense Tracker Application",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "clean": "rimraf node_modules package-lock.json",
-    "setup": "npm install rimraf && npm install",
-    "predev": "npm run setup",
+    "start": "node index.js",
     "dev": "nodemon --ignore node_modules/ --trace-warnings index.js",
-    "start": "node index.js"
+    "build": "echo 'Backend build completed - No build step required for Node.js'",
+    "test": "echo 'No tests specified'",
+    "clean": "rimraf node_modules package-lock.json",
+    "setup": "npm install",
+    "predev": "npm run setup"
   },
-  "keywords": [],
+  "keywords": [
+    "expense",
+    "tracker",
+    "backend",
+    "api"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.1.1",
-    "chart.js": "^4.4.9",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "mongoose": "^8.3.4",
-    "nodemailer": "^6.9.13",
-    "react-chartjs-2": "^5.3.0",
-    "react-toastify": "^11.0.5",
-    "rimraf": "^5.0.10"
+    "node-cron": "^3.0.2",
+    "nodemailer": "^6.9.13"
   },
   "devDependencies": {
-    "nodemon": "^3.1.9"
+    "nodemon": "^3.1.9",
+    "rimraf": "^5.0.10"
+  },
+  "engines": {
+    "node": ">=16.0.0"
   }
 }
