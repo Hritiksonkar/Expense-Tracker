@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const expenseSchema = new mongoose.Schema({
+const ExpenseSchema = new mongoose.Schema({
     label: {
         type: String,
         required: true,
@@ -12,23 +12,28 @@ const expenseSchema = new mongoose.Schema({
         min: 0
     },
     date: {
-        type: Date,
-        required: true,
-        default: Date.now
-    },
-    category: {
-        type: String,
-        required: true,
-        default: 'other'
-    },
-    userId: {
         type: String,
         required: true
     },
-    email: {
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
+    category: {
         type: String,
-        required: false
+        default: 'other',
+        enum: ['food', 'transport', 'utilities', 'entertainment', 'other']
+    },
+    email: {
+        type: String
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
     }
+}, {
+    timestamps: true
 });
 
-module.exports = mongoose.model('Expense', expenseSchema);
+module.exports = mongoose.model('Expense', ExpenseSchema);
