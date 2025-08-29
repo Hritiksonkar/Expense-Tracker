@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Expense = require('../models/Expense');
+const { newExpenseNotification } = require('../services/EmailService');
 
 // CREATE EXPENSE
 router.post('/', async (req, res) => {
@@ -26,6 +27,15 @@ router.post('/', async (req, res) => {
     });
 
     const savedExpense = await expense.save();
+
+    // Send email notification if email is provided
+    if (email) {
+      await newExpenseNotification({
+        ...savedExpense.toObject(),
+        userEmail: email
+      });
+    }
+
     res.status(201).json(savedExpense);
   } catch (error) {
     console.error('Expense creation error:', error);

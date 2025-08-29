@@ -1,6 +1,6 @@
 import axios from "axios";
 
-// Use environment variable for API URL or fallback to localhost with new port
+// Use environment variable for API URL or fallback
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:4445/api/v1/";
 
 export const publicRequest = axios.create({
@@ -14,7 +14,9 @@ export const publicRequest = axios.create({
 // Add request interceptor for debugging
 publicRequest.interceptors.request.use(
     (config) => {
-        console.log(`Making ${config.method?.toUpperCase()} request to: ${config.url}`);
+        if (import.meta.env.DEV) {
+            console.log(`Making ${config.method?.toUpperCase()} request to: ${config.url}`);
+        }
         return config;
     },
     (error) => {

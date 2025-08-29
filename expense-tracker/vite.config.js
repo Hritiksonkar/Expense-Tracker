@@ -10,13 +10,20 @@ export default defineConfig({
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom'],
-          charts: ['chart.js', 'react-chartjs-2', '@mui/x-charts']
+          charts: ['chart.js', 'react-chartjs-2']
         }
       }
     }
   },
-  optimizeDeps: {
-    include: ['@mui/material', '@emotion/react', '@emotion/styled']
+  server: {
+    port: 5173,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:4445',
+        changeOrigin: true,
+        secure: false
+      }
+    }
   },
   resolve: {
     alias: {

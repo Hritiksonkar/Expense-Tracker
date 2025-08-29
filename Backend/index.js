@@ -10,6 +10,7 @@ dotenv.config();
 const expenseRoutes = require('./routes/expense');
 const authRoutes = require('./routes/auth');
 const budgetRoutes = require('./routes/budget');
+const { startCronJobs } = require('./services/CronService');
 
 const app = express();
 
@@ -125,6 +126,9 @@ const startServer = async () => {
             console.log(`Server is running on port ${availablePort}`);
             console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
             console.log(`Health check: http://localhost:${availablePort}/health`);
+
+            // Start background services
+            startCronJobs();
 
             if (availablePort !== preferredPort) {
                 console.log(`Note: Preferred port ${preferredPort} was not available, using ${availablePort} instead`);

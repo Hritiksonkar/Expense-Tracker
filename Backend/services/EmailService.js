@@ -3,7 +3,7 @@ const nodemailer = require("nodemailer");
 dotenv.config();
 
 function createTransporter(config) {
-    const transporter = nodemailer.createTransport(config);
+    const transporter = nodemailer.createTransporter(config);
     return transporter;
 }
 
@@ -30,11 +30,36 @@ const sendMail = async (messageoption) => {
     }
 };
 
+const expenseEmail = async () => {
+    const Expense = require("../models/Expense");
+    try {
+        const expenses = await Expense.find({});
+        const totalExpense = expenses.reduce(
+            (acc, expense) => acc + expense.value,
+            0
+        );
+
+        if (totalExpense > 10000) {
+            let messageoption = {
+                from: process.env.EMAIL,
+                to: process.env.ADMIN_EMAIL,
+                subject: "Warning",
+                text: `Your total expense is $${totalExpense}. Please review your expenses.`
+            };
+
+            await sendMail(messageoption);
+            console.log("Budget warning email sent successfully");
+        }
+    } catch (error) {
+        console.error("Error in expenseEmail:", error);
+    }
+};
+
 const newExpenseNotification = async (expense) => {
     try {
         const messageoption = {
             from: process.env.EMAIL,
-            to: expense.userEmail,
+            to: expense.userEmail || expense.email,
             subject: expense.subject || "New Expense Added",
             text: expense.text || `You have added a new expense:
                 Label: ${expense.label}
@@ -53,5 +78,7 @@ const newExpenseNotification = async (expense) => {
 };
 
 module.exports = {
-    newExpenseNotification
+    expenseEmail,
+    newExpenseNotification,
+    sendMail
 };
