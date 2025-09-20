@@ -16,18 +16,18 @@ const validateAuth = (email, password) => {
 export const login = async (email, password) => {
     try {
         validateAuth(email, password);
-        
+
         // Add timeout for better UX with live backend
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
-        
-        const response = await publicRequest.post("/auth/login", 
+
+        const response = await publicRequest.post("/auth/login",
             { email, password },
             { signal: controller.signal }
         );
-        
+
         clearTimeout(timeoutId);
-        
+
         const { token, ...userData } = response.data;
 
         if (token) {
@@ -41,12 +41,12 @@ export const login = async (email, password) => {
         if (error.name === 'AbortError') {
             throw new Error("Request timeout. Please check your connection and try again.");
         }
-        
+
         // Handle network errors specifically for live backend
         if (error.code === 'ERR_NETWORK') {
             throw new Error("Unable to connect to server. Please try again later.");
         }
-        
+
         const message = error.response?.data?.message || error.message || "Login failed";
         throw new Error(message);
     }
@@ -55,28 +55,28 @@ export const login = async (email, password) => {
 export const register = async (email, password) => {
     try {
         validateAuth(email, password);
-        
+
         // Add timeout for better UX with live backend
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 15000);
-        
+
         const response = await publicRequest.post("/auth/register", {
             email,
             password,
             createdAt: new Date().toISOString()
         }, { signal: controller.signal });
-        
+
         clearTimeout(timeoutId);
         return response.data;
     } catch (error) {
         if (error.name === 'AbortError') {
             throw new Error("Request timeout. Please check your connection and try again.");
         }
-        
+
         if (error.code === 'ERR_NETWORK') {
             throw new Error("Unable to connect to server. Please try again later.");
         }
-        
+
         const message = error.response?.data?.message || error.message || "Registration failed";
         throw new Error(message);
     }
