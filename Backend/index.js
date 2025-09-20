@@ -53,8 +53,13 @@ app.use(express.urlencoded({ extended: true }));
 // MongoDB connection with better error handling
 const connectDB = async () => {
     try {
-        // Use environment variable or fallback to localhost
-        const mongoURI = process.env.MONGODB_URI || process.env.DB || 'mongodb://127.0.0.1:27017/expense-tracker';
+        let mongoURI = process.env.MONGODB_URI || process.env.DB;
+        if (!mongoURI) {
+            if (process.env.NODE_ENV === 'production') {
+                throw new Error('MONGODB_URI environment variable is required in production!');
+            }
+            mongoURI = 'mongodb://127.0.0.1:27017/expense-tracker';
+        }
 
         const conn = await mongoose.connect(mongoURI, {
             serverSelectionTimeoutMS: 30000,
