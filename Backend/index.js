@@ -44,7 +44,9 @@ const findAvailablePort = async (startPort) => {
 
 // Middleware
 app.use(cors({
-    origin: ['http://localhost:3000', 'http://localhost:5173'], // Add Vite dev server port
+    origin: process.env.NODE_ENV === 'production'
+        ? [process.env.FRONTEND_URL, 'https://your-app.vercel.app']
+        : ['http://localhost:3000', 'http://localhost:5173'],
     credentials: true
 }));
 app.use(express.json());
@@ -53,7 +55,7 @@ app.use(express.urlencoded({ extended: true }));
 // MongoDB connection with better error handling
 const connectDB = async () => {
     try {
-        let mongoURI = process.env.MONGODB_URI || process.env.DB;
+        let mongoURI = process.env.MONGODB_URI || process.env.DATABASE_URL || process.env.DB;
         if (!mongoURI) {
             if (process.env.NODE_ENV === 'production') {
                 throw new Error('MONGODB_URI environment variable is required in production!');
@@ -124,19 +126,63 @@ app.use('*', (req, res) => {
 // Start server with port checking
 const startServer = async () => {
     try {
-        const preferredPort = parseInt(process.env.PORT) || 4444;
-        const availablePort = await findAvailablePort(preferredPort);
+        const port = process.env.PORT || 4444;
+
+        // For production, just use the assigned port
+        if (process.env.NODE_ENV === 'production') {
+            const server = app.listen(port, '0.0.0.0', () => {
+                console.log(`Server is running on port ${port}`);
+                console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+                startCronJobs();
+            });
+
+            // Handle unhandled promise rejections
+            process.on('unhandledRejection', (err) => {
+                console.error('Unhandled Rejection:', err);
+                server.close(() => {
+                    process.exit(1);
+                });
+            });
+
+            // Handle uncaught exceptions
+            process.on('uncaughtException', (err) => {
+                console.error('Uncaught Exception:', err);
+                server.close(() => {
+                    process.exit(1);
+                });
+            });
+
+            // Graceful shutdown
+            process.on('SIGTERM', () => {
+                console.log('SIGTERM received');
+                server.close(() => {
+                    mongoose.connection.close();
+                    process.exit(0);
+                });
+            });
+
+            process.on('SIGINT', () => {
+                console.log('SIGINT received');
+                server.close(() => {
+                    mongoose.connection.close();
+                    process.exit(0);
+                });
+            });
+
+            return;
+        }
+
+        // For development, check for available port
+        const availablePort = await findAvailablePort(parseInt(port));
 
         const server = app.listen(availablePort, () => {
             console.log(`Server is running on port ${availablePort}`);
             console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
             console.log(`Health check: http://localhost:${availablePort}/health`);
-
-            // Start background services
             startCronJobs();
 
-            if (availablePort !== preferredPort) {
-                console.log(`Note: Preferred port ${preferredPort} was not available, using ${availablePort} instead`);
+            if (availablePort !== parseInt(port)) {
+                console.log(`Note: Preferred port ${port} was not available, using ${availablePort} instead`);
             }
         });
 

@@ -6,6 +6,7 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: false,
+    minify: 'esbuild',
     rollupOptions: {
       output: {
         manualChunks: {
@@ -13,13 +14,15 @@ export default defineConfig({
           charts: ['chart.js', 'react-chartjs-2']
         }
       }
-    }
+    },
+    chunkSizeWarningLimit: 1000
   },
   server: {
     port: 5173,
+    host: true,
     proxy: {
       '/api': {
-        target: 'http://localhost:4445',
+        target: process.env.VITE_API_URL || 'http://localhost:4444',
         changeOrigin: true,
         secure: false
       }
@@ -29,5 +32,8 @@ export default defineConfig({
     alias: {
       '@': '/src'
     }
+  },
+  define: {
+    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development')
   }
 })

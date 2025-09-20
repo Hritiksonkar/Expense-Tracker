@@ -6,11 +6,14 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon --ignore node_modules/ --trace-warnings index.js",
-    "build": "echo 'Backend build completed - No build step required for Node.js'",
+    "build": "npm install --production",
+    "postbuild": "echo 'Backend build completed successfully'",
     "test": "echo 'No tests specified'",
     "clean": "rimraf node_modules package-lock.json",
     "setup": "npm install",
-    "predev": "npm run setup"
+    "predev": "npm run setup",
+    "heroku-postbuild": "npm install --production",
+    "vercel-build": "npm install --production"
   },
   "keywords": [
     "expense",
@@ -34,6 +37,7 @@
     "rimraf": "^5.0.10"
   },
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
   }
 }
