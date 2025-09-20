@@ -10,8 +10,8 @@ export default defineConfig(({ command, mode }) => {
     base: '/',
     build: {
       outDir: 'dist',
-      sourcemap: mode === 'development',
-      minify: mode === 'production' ? 'esbuild' : false,
+      sourcemap: false,
+      minify: 'esbuild',
       target: 'es2015',
       rollupOptions: {
         output: {
@@ -21,7 +21,6 @@ export default defineConfig(({ command, mode }) => {
             ui: ['@mui/material', '@mui/x-charts']
           }
         },
-        external: [],
         onwarn(warning, warn) {
           // Suppress certain warnings that are not critical
           if (warning.code === 'MODULE_LEVEL_DIRECTIVE') return;
@@ -36,14 +35,20 @@ export default defineConfig(({ command, mode }) => {
     server: {
       port: 5173,
       host: true,
+      strictPort: false,
       proxy: {
         '/api': {
-          target: process.env.VITE_API_URL || 'https://expense-tracker-i7fh.onrender.com',
+          target: env.VITE_API_URL || 'https://expense-tracker-i7fh.onrender.com',
           changeOrigin: true,
           secure: true,
           rewrite: (path) => path.replace(/^\/api/, '/api/v1')
         }
       }
+    },
+    preview: {
+      port: 4173,
+      host: true,
+      strictPort: false
     },
     resolve: {
       alias: {

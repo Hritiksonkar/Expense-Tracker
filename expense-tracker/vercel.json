@@ -1,28 +1,29 @@
 {
     "version": 2,
     "framework": "vite",
-    "buildCommand": "vite build --mode production",
+    "buildCommand": "vite build",
     "outputDirectory": "dist",
-    "installCommand": "npm ci --legacy-peer-deps",
+    "installCommand": "npm install",
     "devCommand": "npm run dev",
-    "functions": {
-        "app/api/**/*.js": {
-            "runtime": "nodejs18.x"
-        }
-    },
+    "cleanUrls": true,
+    "trailingSlash": false,
     "build": {
         "env": {
             "VITE_API_URL": "https://expense-tracker-i7fh.onrender.com/api/v1/",
             "VITE_EMAILJS_SERVICE_ID": "service_h7zmdq7",
             "VITE_EMAILJS_TEMPLATE_ID": "template_ughgv02",
             "VITE_EMAILJS_PUBLIC_KEY": "97zV8E-1f1YviAHXh",
-            "VITE_NODE_ENV": "production",
-            "NODE_OPTIONS": "--max-old-space-size=4096"
+            "VITE_NODE_ENV": "production"
+        }
+    },
+    "functions": {
+        "app/**/*.js": {
+            "runtime": "nodejs18.x"
         }
     },
     "rewrites": [
         {
-            "source": "/(.*)",
+            "source": "/((?!api/).*)",
             "destination": "/index.html"
         }
     ],
@@ -41,11 +42,15 @@
                 {
                     "key": "X-XSS-Protection",
                     "value": "1; mode=block"
+                },
+                {
+                    "key": "Referrer-Policy",
+                    "value": "origin-when-cross-origin"
                 }
             ]
         },
         {
-            "source": "/assets/(.*)",
+            "source": "/static/(.*)",
             "headers": [
                 {
                     "key": "Cache-Control",

@@ -5,15 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite --mode development",
-    "build": "npm run clean && vite build --mode production",
-    "build:production": "vite build --mode production --minify",
+    "build": "vite build --mode production",
+    "build:production": "vite build --mode production",
     "preview": "vite preview",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "clean": "rimraf dist",
-    "clean:win": "if exist dist rmdir /s /q dist",
-    "clean:unix": "rm -rf dist",
     "postbuild": "echo 'Frontend build completed successfully'",
-    "vercel-build": "npm run build"
+    "vercel-build": "vite build --mode production"
   },
   "dependencies": {
     "@emailjs/browser": "^3.12.1",

@@ -17,13 +17,17 @@ export const login = async (email, password) => {
     try {
         validateAuth(email, password);
 
-        // Add timeout for better UX with live backend
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+        const timeoutId = setTimeout(() => controller.abort(), 30000); // Increased timeout for production
 
         const response = await publicRequest.post("/auth/login",
             { email, password },
-            { signal: controller.signal }
+            {
+                signal: controller.signal,
+                timeout: 30000,
+                retry: 3,
+                retryDelay: 1000
+            }
         );
 
         clearTimeout(timeoutId);
@@ -39,12 +43,15 @@ export const login = async (email, password) => {
         throw new Error("Invalid response from server");
     } catch (error) {
         if (error.name === 'AbortError') {
-            throw new Error("Request timeout. Please check your connection and try again.");
+            throw new Error("Request timeout. The server may be starting up, please try again in a moment.");
         }
 
-        // Handle network errors specifically for live backend
-        if (error.code === 'ERR_NETWORK') {
-            throw new Error("Unable to connect to server. Please try again later.");
+        if (error.code === 'ERR_NETWORK' || error.code === 'ECONNREFUSED') {
+            throw new Error("Unable to connect to server. Please check your internet connection and try again.");
+        }
+
+        if (error.response?.status === 502 || error.response?.status === 503) {
+            throw new Error("Server is temporarily unavailable. Please try again in a few moments.");
         }
 
         const message = error.response?.data?.message || error.message || "Login failed";
@@ -56,25 +63,33 @@ export const register = async (email, password) => {
     try {
         validateAuth(email, password);
 
-        // Add timeout for better UX with live backend
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 15000);
+        const timeoutId = setTimeout(() => controller.abort(), 30000);
 
         const response = await publicRequest.post("/auth/register", {
             email,
             password,
             createdAt: new Date().toISOString()
-        }, { signal: controller.signal });
+        }, {
+            signal: controller.signal,
+            timeout: 30000,
+            retry: 3,
+            retryDelay: 1000
+        });
 
         clearTimeout(timeoutId);
         return response.data;
     } catch (error) {
         if (error.name === 'AbortError') {
-            throw new Error("Request timeout. Please check your connection and try again.");
+            throw new Error("Request timeout. The server may be starting up, please try again in a moment.");
         }
 
-        if (error.code === 'ERR_NETWORK') {
-            throw new Error("Unable to connect to server. Please try again later.");
+        if (error.code === 'ERR_NETWORK' || error.code === 'ECONNREFUSED') {
+            throw new Error("Unable to connect to server. Please check your internet connection and try again.");
+        }
+
+        if (error.response?.status === 502 || error.response?.status === 503) {
+            throw new Error("Server is temporarily unavailable. Please try again in a few moments.");
         }
 
         const message = error.response?.data?.message || error.message || "Registration failed";

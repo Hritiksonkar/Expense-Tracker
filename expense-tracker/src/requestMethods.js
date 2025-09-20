@@ -17,20 +17,47 @@ const getApiUrl = () => {
 
 const BASE_URL = getApiUrl();
 
-console.log('API Base URL:', BASE_URL); // Debug log
-
 export const publicRequest = axios.create({
     baseURL: BASE_URL,
-    timeout: 15000,
+    timeout: 30000, // Increased timeout for production
     headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
+    },
+    validateStatus: function (status) {
+        return status < 500; // Accept all status codes less than 500
     }
 });
 
-// Add request interceptor for debugging
+// Add retry interceptor
+const retryRequest = (error) => {
+    const { config } = error;
+
+    if (!config || !config.retry) {
+        return Promise.reject(error);
+    }
+
+    config.__retryCount = config.__retryCount || 0;
+
+    if (config.__retryCount >= config.retry) {
+        return Promise.reject(error);
+    }
+
+    config.__retryCount += 1;
+
+    const delay = config.retryDelay || 1000;
+    return new Promise(resolve => {
+        setTimeout(() => resolve(publicRequest(config)), delay * config.__retryCount);
+    });
+};
+
+// Add request interceptor for debugging and retry logic
 publicRequest.interceptors.request.use(
     (config) => {
+        // Add retry configuration
+        config.retry = config.retry || 2;
+        config.retryDelay = config.retryDelay || 1000;
+
         if (import.meta.env.DEV) {
             console.log(`Making ${config.method?.toUpperCase()} request to: ${config.url}`);
         }
@@ -42,17 +69,28 @@ publicRequest.interceptors.request.use(
     }
 );
 
-// Add response interceptor for error handling
+// Enhanced response interceptor for error handling
 publicRequest.interceptors.response.use(
     (response) => response,
-    (error) => {
-        if (error.code === 'ECONNREFUSED' || error.code === 'ERR_NETWORK') {
-            console.error('Cannot connect to server. Please ensure the backend is running.');
+    async (error) => {
+        // Handle different types of errors
+        if (error.code === 'ECONNABORTED') {
+            console.error('Request timeout occurred');
+        } else if (error.code === 'ERR_NETWORK') {
+            console.error('Network error occurred. Server may be starting up.');
+        } else if (error.response?.status === 502) {
+            console.error('Bad Gateway - Server may be restarting');
+        } else if (error.response?.status === 503) {
+            console.error('Service Unavailable - Server temporarily down');
+        } else if (error.response?.status === 404) {
+            console.error('API endpoint not found:', error.config?.url);
         }
 
-        // Log deployment-specific errors
-        if (error.response?.status === 404) {
-            console.error('API endpoint not found:', error.config?.url);
+        // Try to retry the request
+        if (error.code === 'ERR_NETWORK' ||
+            error.code === 'ECONNABORTED' ||
+            error.response?.status >= 500) {
+            return retryRequest(error);
         }
 
         return Promise.reject(error);

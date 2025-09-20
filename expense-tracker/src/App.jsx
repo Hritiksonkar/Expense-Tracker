@@ -14,6 +14,8 @@ import { exportToExcel } from './services/exportService';
 function App() {
   const [isLogin, setIsLogin] = useState(true);
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")) || null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [connectionError, setConnectionError] = useState(false);
 
   const [addExpense, setAddExpense] = useState(false);
   const [showChats, setShowChats] = useState(false);
@@ -58,11 +60,13 @@ function App() {
         return;
       }
 
+      setIsLoading(true);
+
       const response = await publicRequest.post("/expenses", {
         label,
-        date: new Date(date).toISOString(),  // Convert date to ISO format
+        date: new Date(date).toISOString(),
         value: Number(amount),
-        userId: user.id,  // Changed from _id to id
+        userId: user.id,
         category: category || 'other',
         email: user.email
       });
@@ -74,12 +78,23 @@ function App() {
         setDate("");
         setCategory("other");
         setAddExpense(false);
+        setConnectionError(false);
 
         toast.success(`Expense "${label}" added successfully!`);
       }
     } catch (error) {
       console.error("Error adding expense:", error);
-      toast.error(error.response?.data?.message || "Error adding expense");
+
+      if (error.code === 'ERR_NETWORK') {
+        toast.error("Unable to connect to server. Please check your connection.");
+        setConnectionError(true);
+      } else if (error.response?.status >= 500) {
+        toast.error("Server error. Please try again later.");
+      } else {
+        toast.error(error.response?.data?.message || "Error adding expense");
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -87,10 +102,24 @@ function App() {
     const getExpenses = async () => {
       if (user) {
         try {
+          setIsLoading(true);
+          setConnectionError(false);
+
           const res = await publicRequest.get(`/expenses/${user.id}`);
           setExpenses(res.data);
         } catch (error) {
-          console.log(error);
+          console.error('Failed to load expenses:', error);
+          setConnectionError(true);
+
+          if (error.code === 'ERR_NETWORK') {
+            toast.error('Unable to connect to server. Please check your connection and try again.');
+          } else if (error.response?.status >= 500) {
+            toast.error('Server is temporarily unavailable. Please try again later.');
+          } else {
+            toast.error('Failed to load expenses. Please refresh the page.');
+          }
+        } finally {
+          setIsLoading(false);
         }
       }
     };
@@ -327,11 +356,38 @@ function App() {
     }
   };
 
+  // Show loading indicator during initial load
+  if (isLoading && !user) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full border-blue-500 border-t-transparent"></div>
+          <p className="mt-4">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
-      <ToastContainer />
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
       {!user ? (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+          {connectionError && (
+            <div className="mb-4 p-4 bg-yellow-100 border border-yellow-400 text-yellow-700 rounded">
+              <p>Connection issues detected. Server may be starting up.</p>
+            </div>
+          )}
           {isLogin ? (
             <Login
               onToggleForm={() => setIsLogin(false)}
