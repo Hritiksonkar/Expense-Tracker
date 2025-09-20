@@ -1,16 +1,30 @@
 import axios from "axios";
 
-// Use environment variable for API URL or fallback
-const BASE_URL = import.meta.env.VITE_API_URL ||
-    (import.meta.env.PROD
-        ? "https://expense-tracker-i7fh.onrender.com/api/v1/"
-        : "http://localhost:4444/api/v1/");
+// Get environment variables with fallbacks
+const getApiUrl = () => {
+    // Check for explicit environment variables
+    if (import.meta.env.VITE_API_URL) {
+        return import.meta.env.VITE_API_URL;
+    }
+
+    // Fallback based on mode
+    if (import.meta.env.PROD || import.meta.env.MODE === 'production') {
+        return "https://expense-tracker-i7fh.onrender.com/api/v1/";
+    }
+
+    return "http://localhost:4444/api/v1/";
+};
+
+const BASE_URL = getApiUrl();
+
+console.log('API Base URL:', BASE_URL); // Debug log
 
 export const publicRequest = axios.create({
     baseURL: BASE_URL,
-    timeout: 10000,
+    timeout: 15000,
     headers: {
         'Content-Type': 'application/json',
+        'Accept': 'application/json'
     }
 });
 

@@ -8,14 +8,26 @@ export const sendSpendingAlert = async (userEmail, spentAmount, budgetLimit) => 
             return false;
         }
 
-        // Validate environment variables
+        // Validate environment variables with better error handling
         const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
         const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
         const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
 
         if (!serviceId || !templateId || !publicKey) {
-            console.error('Missing required EmailJS configuration');
-            return false;
+            console.error('Missing required EmailJS configuration:', {
+                hasServiceId: !!serviceId,
+                hasTemplateId: !!templateId,
+                hasPublicKey: !!publicKey
+            });
+
+            // In production, don't show config errors to user
+            if (import.meta.env.PROD) {
+                console.error('Email service configuration error');
+                return false;
+            } else {
+                toast.error('Email service not configured properly');
+                return false;
+            }
         }
 
         const templateParams = {
@@ -46,7 +58,13 @@ export const sendSpendingAlert = async (userEmail, spentAmount, budgetLimit) => 
 
     } catch (error) {
         console.error('Email alert error:', error);
-        toast.error('Failed to send email notification');
+
+        // More specific error handling for production
+        if (import.meta.env.PROD) {
+            console.error('Email notification failed');
+        } else {
+            toast.error('Failed to send email notification: ' + error.message);
+        }
         return false;
     }
 };
