@@ -98,6 +98,22 @@ app.get('/health', (req, res) => {
     });
 });
 
+// Root route for deployment health checks
+app.get('/', (req, res) => {
+    res.status(200).json({
+        message: 'Expense Tracker Backend API',
+        status: 'Running',
+        version: '1.0.0',
+        endpoints: {
+            health: '/health',
+            expenses: '/api/v1/expenses',
+            auth: '/api/v1/auth',
+            budgets: '/api/v1/budgets'
+        },
+        documentation: 'API is running successfully'
+    });
+});
+
 // Initialize connection
 connectDB();
 
@@ -105,6 +121,24 @@ connectDB();
 app.use('/api/v1/expenses', expenseRoutes);
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/budgets', budgetRoutes);
+
+// API info route
+app.get('/api', (req, res) => {
+    res.status(200).json({
+        message: 'Expense Tracker API v1',
+        version: '1.0.0',
+        endpoints: [
+            'GET /api/v1/expenses/:userId - Get user expenses',
+            'POST /api/v1/expenses - Create expense',
+            'PUT /api/v1/expenses/:id - Update expense',
+            'DELETE /api/v1/expenses/:id - Delete expense',
+            'POST /api/v1/auth/login - User login',
+            'POST /api/v1/auth/register - User registration',
+            'GET /api/v1/budgets/:userId - Get user budgets',
+            'POST /api/v1/budgets - Create budget'
+        ]
+    });
+});
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -115,11 +149,22 @@ app.use((err, req, res, next) => {
     });
 });
 
-// 404 handler
+// 404 handler - Move this to the end
 app.use('*', (req, res) => {
     res.status(404).json({
         message: 'Route not found',
-        path: req.originalUrl
+        path: req.originalUrl,
+        availableRoutes: [
+            'GET /',
+            'GET /health',
+            'GET /api',
+            'POST /api/v1/auth/login',
+            'POST /api/v1/auth/register',
+            'GET /api/v1/expenses/:userId',
+            'POST /api/v1/expenses',
+            'GET /api/v1/budgets/:userId',
+            'POST /api/v1/budgets'
+        ]
     });
 });
 
