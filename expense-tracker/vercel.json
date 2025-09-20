@@ -28,6 +28,9 @@
             ]
         }
     ],
+    "env": {
+        "VITE_API_URL": "https://expense-tracker-i7fh.onrender.com/api/v1/"
+    },
     "buildCommand": "npm run build",
     "outputDirectory": "dist",
     "installCommand": "npm install",

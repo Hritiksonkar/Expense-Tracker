@@ -22,9 +22,10 @@ export default defineConfig({
     host: true,
     proxy: {
       '/api': {
-        target: process.env.VITE_API_URL || 'http://localhost:4444',
+        target: process.env.VITE_API_URL || 'https://expense-tracker-i7fh.onrender.com',
         changeOrigin: true,
-        secure: false
+        secure: true,
+        rewrite: (path) => path.replace(/^\/api/, '/api/v1')
       }
     }
   },

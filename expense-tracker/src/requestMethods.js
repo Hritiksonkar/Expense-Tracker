@@ -3,7 +3,7 @@ import axios from "axios";
 // Use environment variable for API URL or fallback
 const BASE_URL = import.meta.env.VITE_API_URL ||
     (import.meta.env.PROD
-        ? "https://your-backend-url.vercel.app/api/v1/"
+        ? "https://expense-tracker-i7fh.onrender.com/api/v1/"
         : "http://localhost:4444/api/v1/");
 
 export const publicRequest = axios.create({
