@@ -47,24 +47,3 @@ export default defineConfig(({ command, mode }) => {
     }
   }
 })
-host: true,
-  strictPort: false
-    },
-resolve: {
-  alias: {
-    '@': '/src'
-  }
-},
-define: {
-  'process.env.NODE_ENV': JSON.stringify(mode),
-    'process.env.VITE_NODE_ENV': JSON.stringify(env.VITE_NODE_ENV || mode),
-      global: 'globalThis',
-        __DEV__: mode === 'development'
-},
-optimizeDeps: {
-  include: ['react', 'react-dom', 'axios', 'chart.js', 'react-chartjs-2']
-},
-envPrefix: 'VITE_',
-  envDir: process.cwd()
-  }
-})
