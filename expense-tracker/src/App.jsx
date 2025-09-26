@@ -469,7 +469,7 @@ function App() {
               </button>
 
               {addExpense && (
-                <div className="absolute z-[999] flex flex-col p-[10px] top-[20px] left-0 h-auto min-h-[400px] w-[90vw] max-w-[500px] bg-white shadow-xl rounded-lg border border-gray-200 animate-fadeIn">
+                <div className="absolute z-[999] flex flex-col p-[10px] top-[20px] left-0 min-h-[400px] w-[90vw] max-w-[500px] bg-white shadow-xl rounded-lg border border-gray-200 animate-fadeIn overflow-y-auto">
                   <FaWindowClose
                     className="flex justify-end items-end text-2xl text-red-500 cursor-pointer self-end"
                     onClick={handleAddExpense}
@@ -481,7 +481,7 @@ function App() {
                     type="text"
                     value={label}
                     placeholder="Snacks"
-                    className="border-[#444] p-[10px] outline-none rounded"
+                    className="border-[#444] p-[10px] outline-none rounded mb-2"
                     onChange={(e) => setLabel(e.target.value)}
                   />
 
@@ -492,7 +492,7 @@ function App() {
                   <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    className="p-[10px] outline-none border-[#444] rounded"
+                    className="p-[10px] outline-none border-[#444] rounded mb-2"
                   >
                     <option value="food">Food</option>
                     <option value="transport">Transport</option>
@@ -511,7 +511,7 @@ function App() {
                     type="Number"
                     value={amount}
                     placeholder="Amount"
-                    className="p-[10px] outline-none rounded"
+                    className="p-[10px] outline-none rounded mb-2"
                     onChange={(e) => setValue(e.target.value)}
                   />
                   <label
@@ -523,7 +523,7 @@ function App() {
                   <input
                     type="date"
                     value={date}
-                    className="p-[10px] outline-none rounded"
+                    className="p-[10px] outline-none rounded mb-4"
                     onChange={(e) => setDate(e.target.value)}
                   />
 
