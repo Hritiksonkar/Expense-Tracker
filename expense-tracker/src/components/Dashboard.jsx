@@ -149,8 +149,8 @@ const Dashboard = ({ expenses, notifications, onBudgetChange }) => {
     };
 
     return (
-        <div className="bg-white rounded-lg shadow-lg p-6 mt-4 w-full">
-            <div className="flex justify-between items-center mb-6">
+        <div className="bg-white rounded-lg shadow-lg p-6 mt-4 w-full max-w-5xl mx-auto transition-all duration-300">
+            <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6 gap-4">
                 <h2 className="text-2xl font-bold text-gray-800">Dashboard</h2>
                 <div className="flex items-center gap-2">
                     {isEditingBudget ? (
@@ -159,12 +159,12 @@ const Dashboard = ({ expenses, notifications, onBudgetChange }) => {
                                 type="number"
                                 value={newBudget}
                                 onChange={(e) => setNewBudget(e.target.value)}
-                                className="w-32 p-2 border rounded"
+                                className="w-32 p-2 border rounded focus:ring-2 focus:ring-[#af8978] focus:border-transparent transition-all duration-300"
                                 placeholder="Enter budget"
                             />
                             <button
                                 onClick={handleBudgetSubmit}
-                                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 focus:ring-2 focus:ring-green-400 transition-all duration-300"
                             >
                                 Save
                             </button>
@@ -172,7 +172,7 @@ const Dashboard = ({ expenses, notifications, onBudgetChange }) => {
                     ) : (
                         <button
                             onClick={() => setIsEditingBudget(true)}
-                            className="flex items-center gap-2 text-blue-500 hover:text-blue-600"
+                            className="flex items-center gap-2 text-blue-500 hover:text-blue-600 focus:ring-2 focus:ring-blue-300 px-3 py-2 rounded transition-all duration-300"
                         >
                             <FaEdit /> Edit Budget
                         </button>
@@ -185,8 +185,8 @@ const Dashboard = ({ expenses, notifications, onBudgetChange }) => {
                 budget={newBudget}
             />
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6 mt-6">
-                <div className="bg-blue-50 p-4 rounded-lg">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-6 mt-6">
+                <div className="bg-blue-50 p-4 rounded-lg hover:shadow-md transition-all duration-300">
                     <div className="flex items-center">
                         <FaWallet className="text-blue-500 text-xl mr-2" />
                         <h3 className="font-semibold text-gray-800">Total Expenses</h3>
@@ -196,7 +196,7 @@ const Dashboard = ({ expenses, notifications, onBudgetChange }) => {
                     </p>
                 </div>
 
-                <div className="bg-green-50 p-4 rounded-lg">
+                <div className="bg-green-50 p-4 rounded-lg hover:shadow-md transition-all duration-300">
                     <div className="flex items-center">
                         <FaChartBar className="text-green-500 text-xl mr-2" />
                         <h3 className="font-semibold text-gray-800">Remaining Budget</h3>
@@ -206,7 +206,7 @@ const Dashboard = ({ expenses, notifications, onBudgetChange }) => {
                     </p>
                 </div>
 
-                <div className="bg-yellow-50 p-4 rounded-lg">
+                <div className="bg-yellow-50 p-4 rounded-lg hover:shadow-md transition-all duration-300">
                     <div className="flex items-center">
                         <FaExclamationTriangle className="text-yellow-500 text-xl mr-2" />
                         <h3 className="font-semibold text-gray-800">Active Warnings</h3>
@@ -219,12 +219,12 @@ const Dashboard = ({ expenses, notifications, onBudgetChange }) => {
                 <h3 className="text-xl font-semibold mb-4">Recent Activity</h3>
                 <div className="space-y-4">
                     {stats.recentExpenses.map((expense, index) => (
-                        <div key={expense._id || index} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                        <div key={expense._id || index} className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200">
                             <div>
                                 <p className="font-medium text-gray-800">{expense.label}</p>
                                 <p className="text-sm text-gray-500">{expense.date}</p>
                             </div>
-                            <span className="font-bold text-gray-800">
+                            <span className="font-bold text-gray-800 mt-2 sm:mt-0">
                                 {formatCurrency(expense.value)}
                             </span>
                         </div>

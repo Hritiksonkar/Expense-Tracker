@@ -400,9 +400,9 @@ function App() {
           )}
         </div>
       ) : (
-        <div className="flex flex-col justify-center items-center mt-[3%] w-[80%] mr-[5%] ml-[5%]">
+        <div className="flex flex-col justify-center items-center mt-[3%] w-full max-w-7xl mx-auto px-2 sm:px-6">
           {/* Existing header */}
-          <div className="w-full flex justify-between items-center mb-4 p-4 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
+          <div className="w-full flex flex-col sm:flex-row justify-between items-center mb-4 p-4 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 gap-4">
             <h1 className="text-2xl font-medium text-[#555] hover:text-[#af8978] transition-colors duration-300">
               Expense Tracker
             </h1>
@@ -410,7 +410,7 @@ function App() {
               <div className="relative">
                 <button
                   onClick={() => setShowNotifications(!showNotifications)}
-                  className="p-2 hover:bg-gray-100 rounded-full relative"
+                  className="p-2 hover:bg-gray-100 rounded-full relative focus:ring-2 focus:ring-[#af8978] transition-all duration-300"
                 >
                   <FaBell className="text-[#af8978] text-xl" />
                   {notifications.length > 0 && (
@@ -433,7 +433,7 @@ function App() {
               <span className="text-gray-600">Welcome, {user.email}</span>
               <button
                 onClick={handleLogout}
-                className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transform hover:scale-105 transition-all duration-300 active:scale-95"
+                className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transform hover:scale-105 transition-all duration-300 active:scale-95 focus:ring-2 focus:ring-red-400"
               >
                 Logout
               </button>
@@ -447,52 +447,52 @@ function App() {
             onBudgetChange={handleBudgetChange}
           />
 
-          <div className="flex items-center justify-between mt-5 w-[100%]">
-            <div className="relative flex justify-between w-[300px]">
+          <div className="flex flex-col md:flex-row items-center justify-between mt-5 w-full gap-4">
+            <div className="relative flex flex-col sm:flex-row justify-between w-full max-w-lg gap-2">
               <button
-                className="bg-[#af8978] p-[10px] border-none outline-none cursor-pointer text-[#fff] text-medium rounded-lg hover:bg-[#97756b] transform hover:scale-105 transition-all duration-300 active:scale-95 shadow-md"
+                className="bg-[#af8978] p-[10px] border-none outline-none cursor-pointer text-[#fff] text-medium rounded-lg hover:bg-[#97756b] transform hover:scale-105 transition-all duration-300 active:scale-95 shadow-md focus:ring-2 focus:ring-[#af8978]"
                 onClick={handleAddExpense}
               >
                 Add Expense
               </button>
               <button
-                className="bg-blue-300 cursor-pointer p-[10px] text-[#fff] rounded-lg hover:bg-blue-400 transform hover:scale-105 transition-all duration-300 active:scale-95 shadow-md"
+                className="bg-blue-400 cursor-pointer p-[10px] text-[#fff] rounded-lg hover:bg-blue-500 transform hover:scale-105 transition-all duration-300 active:scale-95 shadow-md focus:ring-2 focus:ring-blue-400"
                 onClick={handleShowChart}
               >
                 Expense Report
               </button>
               <button
-                className="bg-green-500 cursor-pointer p-[10px] text-[#fff] rounded-lg hover:bg-green-600 transform hover:scale-105 transition-all duration-300 active:scale-95 shadow-md"
+                className="bg-green-500 cursor-pointer p-[10px] text-[#fff] rounded-lg hover:bg-green-600 transform hover:scale-105 transition-all duration-300 active:scale-95 shadow-md focus:ring-2 focus:ring-green-400"
                 onClick={handleExportData}
               >
                 Export Excel
               </button>
 
               {addExpense && (
-                <div className="absolute z-[999] flex flex-col p-[10px] top-[20px] left-0 h-[500px] w-[500px] bg-white shadow-xl">
+                <div className="absolute z-[999] flex flex-col p-[10px] top-[20px] left-0 h-auto min-h-[400px] w-[90vw] max-w-[500px] bg-white shadow-xl rounded-lg border border-gray-200 animate-fadeIn">
                   <FaWindowClose
-                    className="flex justify-end items-end text-2xl text-red-500 cursor-pointer"
+                    className="flex justify-end items-end text-2xl text-red-500 cursor-pointer self-end"
                     onClick={handleAddExpense}
                   />
-                  <label htmlFor="" className="mt-[10px]font-semibold text-[18px]">
+                  <label htmlFor="" className="mt-2 font-semibold text-[18px]">
                     Expense Name
                   </label>
                   <input
                     type="text"
                     value={label}
                     placeholder="Snacks"
-                    className="border-[#444] p-[10px] outline-none"
+                    className="border-[#444] p-[10px] outline-none rounded"
                     onChange={(e) => setLabel(e.target.value)}
                   />
 
                   {/* Add category select field */}
-                  <label htmlFor="" className="mt-[10px]font-semibold text-[18px]">
+                  <label htmlFor="" className="mt-2 font-semibold text-[18px]">
                     Category
                   </label>
                   <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    className="p-[10px] outline-none border-[#444]"
+                    className="p-[10px] outline-none border-[#444] rounded"
                   >
                     <option value="food">Food</option>
                     <option value="transport">Transport</option>
@@ -503,33 +503,32 @@ function App() {
 
                   <label
                     htmlFor=""
-                    className="mt-[10px] font-semibold text-[18px]"
+                    className="mt-2 font-semibold text-[18px]"
                   >
                     Expense Amount
                   </label>
                   <input
                     type="Number"
                     value={amount}
-                    placeholder="Snacks"
-                    className="p-[10px] outline-none"
+                    placeholder="Amount"
+                    className="p-[10px] outline-none rounded"
                     onChange={(e) => setValue(e.target.value)}
                   />
                   <label
                     htmlFor=""
-                    className="mt-[10px] font-semibold text-[18px]"
+                    className="mt-2 font-semibold text-[18px]"
                   >
                     Expense Date
                   </label>
                   <input
                     type="date"
                     value={date}
-                    placeholder="Snacks"
-                    className="p-[10px] outline-none"
+                    className="p-[10px] outline-none rounded"
                     onChange={(e) => setDate(e.target.value)}
                   />
 
                   <button
-                    className="bg-[#af8978] text-white p-[10px] border-none cursor-pointer my-10"
+                    className="bg-[#af8978] text-white p-[10px] border-none cursor-pointer my-6 rounded hover:bg-[#97756b] transition-all duration-300"
                     onClick={handleExpense}
                   >
                     Add Expense
@@ -538,9 +537,9 @@ function App() {
               )}
 
               {showChats && (
-                <div className="absolute z-[999] flex flex-col p-[10px] top-[20px] left-[100px] h-[500px] w-[500px] bg-white shadow-xl">
+                <div className="absolute z-[999] flex flex-col p-[10px] top-[20px] left-[100px] h-auto min-h-[400px] w-[90vw] max-w-[500px] bg-white shadow-xl rounded-lg border border-gray-200 animate-fadeIn">
                   <FaWindowClose
-                    className="flex justify-end items-end text-2xl text-red-500 cursor-pointer"
+                    className="flex justify-end items-end text-2xl text-red-500 cursor-pointer self-end"
                     onClick={handleShowChart}
                   />
                   <PieChart
@@ -566,16 +565,16 @@ function App() {
                 </div>
               )}
             </div>
-            <div className="flex gap-4">
+            <div className="flex gap-4 w-full max-w-md mt-4 md:mt-0">
               <input
                 type="text"
                 placeholder="Search"
-                className="p-[10px] w-[150px] border-2 border-[#444] border-solid"
+                className="p-[10px] w-full border-2 border-[#444] border-solid rounded focus:ring-2 focus:ring-[#af8978] transition-all duration-300"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
               <select
-                className="p-[10px] border-2 border-[#444] border-solid"
+                className="p-[10px] border-2 border-[#444] border-solid rounded focus:ring-2 focus:ring-[#af8978] transition-all duration-300"
                 value={dateFilter}
                 onChange={(e) => setDateFilter(e.target.value)}
               >
@@ -586,27 +585,27 @@ function App() {
               </select>
             </div>
           </div>
-          <div className="flex flex-col">
+          <div className="flex flex-col w-full">
             {filteredExpenses.map((expense, index) => (
               <div
-                key={expense._id} // Changed: Moved key to outermost element and using expense._id instead of index
-                className="relative flex justify-between items-center w-[80vw] h-[100px] bg-[#f3edeb] my-[20px] py-[10px] rounded-lg hover:bg-[#ebe3e0] transition-colors duration-300 transform hover:scale-[1.01] hover:shadow-md"
+                key={expense._id}
+                className="relative flex flex-col sm:flex-row justify-between items-center w-full min-h-[80px] bg-[#f3edeb] my-3 py-3 px-4 rounded-lg hover:bg-[#ebe3e0] transition-colors duration-300 transform hover:scale-[1.01] hover:shadow-md"
               >
-                <h2 className="m-[20px] text-[#555] text-[18px] font-medium hover:text-[#af8978] transition-colors duration-300">
+                <h2 className="m-2 text-[#555] text-[18px] font-medium hover:text-[#af8978] transition-colors duration-300">
                   {expense.label}
                 </h2>
-                <h2 className="m-[20px] text-[18px]">{expense.date}</h2>
-                <h2 className="m-[20px] text-[18px] font-medium">
+                <h2 className="m-2 text-[18px]">{expense.date}</h2>
+                <h2 className="m-2 text-[18px] font-medium">
                   ₹{expense.value}
                 </h2>
 
-                <div className="flex gap-3">
+                <div className="flex gap-3 mt-2 sm:mt-0">
                   <FaTrash
-                    className="text-red-500 mr-[10px] cursor-pointer hover:text-red-600 transform hover:scale-110 transition-all duration-300"
+                    className="text-red-500 mr-2 cursor-pointer hover:text-red-600 transform hover:scale-110 transition-all duration-300"
                     onClick={() => handleDelete(expense._id)}
                   />
                   <FaEdit
-                    className="text-[#555] my-[10px] cursor-pointer hover:text-[#af8978] transform hover:scale-110 transition-all duration-300"
+                    className="text-[#555] cursor-pointer hover:text-[#af8978] transform hover:scale-110 transition-all duration-300"
                     onClick={() => handleUpdate(expense._id)}
                   />
                 </div>
@@ -615,45 +614,47 @@ function App() {
           </div>
 
           {update && (
-            <div className="absolute z-[999] flex flex-col p-[10px] top-[25%] right-0 h-[500px] w-[500px] bg-white shadow-xl">
-              <FaWindowClose
-                className="flex justify-end items-end text-2xl text-red-500 cursor-pointer"
-                onClick={handleUpdate}
-              />
-              <label htmlFor="" className="mt-[10px]font-semibold text-[18px]">
-                Expense Name
-              </label>
-              <input
-                type="text"
-                placeholder="Birthday"
-                className="border-[#444]  p-[10px] outline-none"
-                onChange={(e) => setUpdatedLabel(e.target.value)}
-              />
-              <label htmlFor="" className="mt-[10px] font-semibold text-[18px]">
-                Expense Amount
-              </label>
-              <input
-                type="Number"
-                placeholder="300"
-                className="p-[10px] outline-none"
-                onChange={(e) => setUpdatedAmount(e.target.value)}
-              />
-              <label htmlFor="" className="mt-[10px] font-semibold text-[18px]">
-                Expense Date
-              </label>
-              <input
-                type="text"
-                placeholder="20/11/2024"
-                className="p-[10px] outline-none"
-                onChange={(e) => setUpdatedDate(e.target.value)}
-              />
+            <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black bg-opacity-30">
+              <div className="flex flex-col p-6 bg-white shadow-xl rounded-lg w-[90vw] max-w-[500px] animate-fadeIn">
+                <FaWindowClose
+                  className="flex justify-end items-end text-2xl text-red-500 cursor-pointer self-end"
+                  onClick={handleUpdate}
+                />
+                <label htmlFor="" className="mt-2 font-semibold text-[18px]">
+                  Expense Name
+                </label>
+                <input
+                  type="text"
+                  placeholder="Birthday"
+                  className="border-[#444] p-[10px] outline-none rounded"
+                  onChange={(e) => setUpdatedLabel(e.target.value)}
+                />
+                <label htmlFor="" className="mt-2 font-semibold text-[18px]">
+                  Expense Amount
+                </label>
+                <input
+                  type="Number"
+                  placeholder="300"
+                  className="p-[10px] outline-none rounded"
+                  onChange={(e) => setUpdatedAmount(e.target.value)}
+                />
+                <label htmlFor="" className="mt-2 font-semibold text-[18px]">
+                  Expense Date
+                </label>
+                <input
+                  type="text"
+                  placeholder="20/11/2024"
+                  className="p-[10px] outline-none rounded"
+                  onChange={(e) => setUpdatedDate(e.target.value)}
+                />
 
-              <button
-                className="bg-[#af8978] text-white p-[10px] border-none cursor-pointer my-10"
-                onClick={updateExpense}
-              >
-                Update Expense
-              </button>
+                <button
+                  className="bg-[#af8978] text-white p-[10px] border-none cursor-pointer my-6 rounded hover:bg-[#97756b] transition-all duration-300"
+                  onClick={updateExpense}
+                >
+                  Update Expense
+                </button>
+              </div>
             </div>
           )}
         </div>

@@ -25,25 +25,25 @@ const BudgetProgressBar = ({ totalSpent = 0, budget = 0 }) => {
 
     return (
         <div className="w-full p-4 bg-white rounded-lg shadow-sm">
-            <div className="flex justify-between mb-2">
+            <div className="flex flex-col sm:flex-row sm:justify-between mb-2">
                 <span className="text-sm font-medium text-gray-700">Monthly Budget Usage</span>
                 <span className={`text-sm font-bold ${getTextColor()}`}>
                     {percentage.toFixed(1)}% {percentage > 100 ? '(Over Budget!)' : ''}
                 </span>
             </div>
-            <div className="w-full h-4 bg-gray-200 rounded-full overflow-hidden">
+            <div className="relative w-full h-4 bg-gray-200 rounded-full overflow-hidden">
                 <div
                     className={`h-full rounded-full transition-all duration-500 ease-in-out ${getProgressColor()}`}
                     style={{ width: dynamicWidth }}
                 >
                     {percentage > 15 && (
-                        <span className="absolute text-xs text-white ml-2 mt-0.5">
+                        <span className="absolute left-4 top-0 text-xs text-white font-semibold">
                             {formatCurrency(numericSpent)} / {formatCurrency(numericBudget)}
                         </span>
                     )}
                 </div>
             </div>
-            <div className="flex justify-between mt-2">
+            <div className="flex flex-col sm:flex-row sm:justify-between mt-2">
                 <span className={`text-sm ${getTextColor()}`}>
                     {formatCurrency(numericSpent)} spent
                 </span>

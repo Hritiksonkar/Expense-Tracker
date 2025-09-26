@@ -9,7 +9,7 @@ const Notification = ({ notifications, onClose, budgetLimit }) => {
     };
 
     return (
-        <div className="fixed top-20 right-4 w-80 z-50 bg-white rounded-lg shadow-xl border border-gray-200">
+        <div className="fixed top-20 right-4 w-[90vw] max-w-xs sm:max-w-sm md:max-w-md z-50 bg-white rounded-lg shadow-xl border border-gray-200 animate-fadeIn">
             <div className="p-4">
                 <div className="flex justify-between items-center mb-4">
                     <h3 className="font-semibold text-gray-800">Notifications</h3>
@@ -23,18 +23,18 @@ const Notification = ({ notifications, onClose, budgetLimit }) => {
                         notifications.map((notification, index) => (
                             <div
                                 key={index}
-                                className={`mb-3 p-3 bg-gray-50 rounded-lg border-l-4 ${notification.type === 'warning' ? 'border-yellow-500' :
-                                        notification.type === 'alert' ? 'border-red-500' :
-                                            notification.type === 'info' ? 'border-blue-500' :
-                                                'border-gray-500'
+                                className={`mb-3 p-3 bg-gray-50 rounded-lg border-l-4 transition-all duration-200 ${notification.type === 'warning' ? 'border-yellow-500' :
+                                    notification.type === 'alert' ? 'border-red-500' :
+                                        notification.type === 'info' ? 'border-blue-500' :
+                                            'border-gray-500'
                                     }`}
                             >
                                 <div className="flex justify-between items-start">
                                     <div className="flex items-start">
                                         <FaBell className={`mt-1 mr-2 ${notification.type === 'warning' ? 'text-yellow-500' :
-                                                notification.type === 'alert' ? 'text-red-500' :
-                                                    notification.type === 'info' ? 'text-blue-500' :
-                                                        'text-gray-500'
+                                            notification.type === 'alert' ? 'text-red-500' :
+                                                notification.type === 'info' ? 'text-blue-500' :
+                                                    'text-gray-500'
                                             }`} />
                                         <div>
                                             <h4 className="font-medium">{notification.title}</h4>
@@ -48,7 +48,7 @@ const Notification = ({ notifications, onClose, budgetLimit }) => {
                                     </div>
                                     <button
                                         onClick={() => onClose(index)}
-                                        className="text-gray-400 hover:text-gray-600"
+                                        className="text-gray-400 hover:text-gray-600 focus:ring-2 focus:ring-[#af8978] rounded transition-all duration-200"
                                     >
                                         <FaTimes />
                                     </button>
