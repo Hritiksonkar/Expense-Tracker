@@ -48,18 +48,20 @@ const ExpenseAnalytics = ({ expenses }) => {
 
     const { categoryData, monthlyData } = prepareChartData();
 
+    const doughnutColors = [
+        '#FF6384',
+        '#36A2EB',
+        '#FFCE56',
+        '#4BC0C0',
+        '#9966FF',
+        '#FF9F40'
+    ];
+
     const doughnutData = {
         labels: Object.keys(categoryData),
         datasets: [{
             data: Object.values(categoryData),
-            backgroundColor: [
-                '#FF6384',
-                '#36A2EB',
-                '#FFCE56',
-                '#4BC0C0',
-                '#9966FF',
-                '#FF9F40'
-            ]
+            backgroundColor: doughnutColors.slice(0, Object.keys(categoryData).length)
         }]
     };
 
@@ -106,6 +108,21 @@ const ExpenseAnalytics = ({ expenses }) => {
                 <div className="bg-gray-50 p-4 rounded-lg">
                     <h3 className="text-lg font-semibold mb-4">Expense Distribution</h3>
                     <Doughnut data={doughnutData} options={options} />
+                    {/* Category legend */}
+                    <div className="mt-4 flex flex-wrap gap-3 bg-white p-2 rounded">
+                        {Object.keys(categoryData).map((cat, idx) => (
+                            <div key={cat} className="flex items-center gap-2">
+                                <span
+                                    className="inline-block w-4 h-4 rounded-full"
+                                    style={{ backgroundColor: doughnutColors[idx % doughnutColors.length], border: '1px solid #ccc' }}
+                                ></span>
+                                <span className="text-sm font-medium text-gray-800">{cat}</span>
+                                <span className="text-sm text-gray-600 font-semibold">
+                                    ₹{categoryData[cat].toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
                 </div>
                 <div className="bg-gray-50 p-4 rounded-lg">
                     <h3 className="text-lg font-semibold mb-4">Monthly Trend</h3>
@@ -116,8 +133,13 @@ const ExpenseAnalytics = ({ expenses }) => {
                     <Bar data={barData} options={options} />
                 </div>
             </div>
-            <div className="mt-4">
-                <strong>Total Expenses:</strong> ₹{totalSum}
+            <div className="mt-6 flex justify-center">
+                <div className="bg-white px-6 py-3 rounded shadow text-center">
+                    <span className="block text-lg font-semibold text-gray-700">Total Expenses</span>
+                    <span className="block text-2xl font-bold text-[#af8978] tracking-wide">
+                        ₹{totalSum}
+                    </span>
+                </div>
             </div>
         </div>
     );
