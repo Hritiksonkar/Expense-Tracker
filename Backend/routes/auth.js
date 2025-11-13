@@ -6,7 +6,15 @@ const bcrypt = require("bcrypt");
 // REGISTER
 router.post("/register", async (req, res) => {
     try {
-        const { email, password } = req.body;
+        let { email, password } = req.body;
+
+        // Validate input
+        if (!email || !password) {
+            return res.status(400).json({ message: "Email and password are required" });
+        }
+
+        // Normalize email
+        email = String(email).trim().toLowerCase();
 
         // Check if user already exists
         const existingUser = await User.findOne({ email });
@@ -47,7 +55,15 @@ router.post("/register", async (req, res) => {
 // LOGIN
 router.post("/login", async (req, res) => {
     try {
-        const { email, password } = req.body;
+        let { email, password } = req.body;
+
+        // Validate input
+        if (!email || !password) {
+            return res.status(400).json({ message: "Email and password are required" });
+        }
+
+        // Normalize email
+        email = String(email).trim().toLowerCase();
 
         // Find user
         const user = await User.findOne({ email });
@@ -55,8 +71,24 @@ router.post("/login", async (req, res) => {
             return res.status(404).json({ message: "User not found" });
         }
 
-        // Check password
-        const validPassword = await bcrypt.compare(password, user.password);
+        // Check password (try bcrypt first; fallback to plain text for legacy accounts)
+        let validPassword = await bcrypt.compare(password, user.password);
+        if (!validPassword) {
+            // Fallback: maybe the stored password is plaintext from an older import
+            if (user.password === password) {
+                // Upgrade stored password to hashed version for security
+                try {
+                    const hashed = await bcrypt.hash(password, 10);
+                    user.password = hashed;
+                    await user.save();
+                    validPassword = true;
+                } catch (upgradeErr) {
+                    // If upgrade fails, still allow login if plaintext matched
+                    validPassword = true;
+                }
+            }
+        }
+
         if (!validPassword) {
             return res.status(401).json({ message: "Invalid password" });
         }
