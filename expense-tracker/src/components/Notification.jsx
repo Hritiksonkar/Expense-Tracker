@@ -9,7 +9,7 @@ const Notification = ({ notifications, onClose, budgetLimit }) => {
     };
 
     return (
-        <div className="fixed top-20 right-4 w-[90vw] max-w-xs sm:max-w-sm md:max-w-md z-50 bg-white rounded-lg shadow-xl border border-gray-200 animate-fadeIn">
+        <div className="w-full bg-white rounded-lg shadow-xl border border-gray-200 animate-fadeIn">
             <div className="p-4">
                 <div className="flex justify-between items-center mb-4">
                     <h3 className="font-semibold text-gray-800">Notifications</h3>
