@@ -12,6 +12,11 @@ const Login = ({ onToggleForm, onLoginSuccess }) => {
     const [showPassword, setShowPassword] = useState(false);
     const [remember, setRemember] = useState(false);
 
+    const inputStyle = {
+        backgroundColor: 'rgba(255,255,255,0.05)',
+        color: '#fff'
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
@@ -46,7 +51,7 @@ const Login = ({ onToggleForm, onLoginSuccess }) => {
                         <p style={{ color: 'rgba(255,255,255,0.6)', marginTop: 6 }}>Log in to access your expenses</p>
                     </div>
 
-                    {error && <div style={{ background: 'rgba(255,0,0,0.04)', color: '#ffb0b0', padding: 10, borderRadius: 8, marginBottom: 8 }}>{error}</div>}
+                    {error && <div style={{ background: 'rgba(255,0,0,0.04)', color: '', padding: 10, borderRadius: 8, marginBottom: 8 }}>{error}</div>}
 
                     <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }} noValidate>
                         <input
@@ -57,6 +62,7 @@ const Login = ({ onToggleForm, onLoginSuccess }) => {
                             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                             required
                             autoFocus
+                            style={inputStyle}
                         />
 
                         <div style={{ position: 'relative' }}>
@@ -67,6 +73,7 @@ const Login = ({ onToggleForm, onLoginSuccess }) => {
                                 value={formData.password}
                                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                                 required
+                                style={inputStyle}
                             />
                             <div
                                 className="input-icon"
