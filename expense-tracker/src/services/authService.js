@@ -97,6 +97,21 @@ export const register = async (email, password) => {
     }
 };
 
+export const resetPassword = async (email, password) => {
+    try {
+        if (!email) throw new Error("Email is required");
+        if (password.length < 6) throw new Error("Password must be at least 6 characters");
+
+        const response = await publicRequest.post("/auth/reset-password", {
+            email,
+            password
+        });
+        return response.data;
+    } catch (error) {
+        throw new Error(error.response?.data?.message || error.message || "Password reset failed");
+    }
+};
+
 export const logout = () => {
     try {
         localStorage.removeItem("user");
