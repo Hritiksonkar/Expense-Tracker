@@ -108,12 +108,28 @@ app.use(express.urlencoded({ extended: true }));
 // MongoDB connection with better error handling
 const connectDB = async () => {
     try {
-        let mongoURI = process.env.MONGODB_URI || process.env.DATABASE_URL || process.env.DB;
+        const rawMongoUri = process.env.MONGODB_URI || process.env.DATABASE_URL || process.env.DB;
+        let mongoURI = rawMongoUri;
         if (!mongoURI) {
             if (process.env.NODE_ENV === 'production') {
                 throw new Error('MONGODB_URI environment variable is required in production!');
             }
             mongoURI = 'mongodb://127.0.0.1:27017/expense-tracker';
+        } else {
+            // Render/CI env vars sometimes include quotes or trailing spaces
+            mongoURI = String(mongoURI).trim();
+            if ((mongoURI.startsWith('"') && mongoURI.endsWith('"')) || (mongoURI.startsWith("'") && mongoURI.endsWith("'"))) {
+                mongoURI = mongoURI.slice(1, -1).trim();
+            }
+        }
+
+        // Log sanitized connection info (never log the full URI)
+        try {
+            const url = new URL(mongoURI);
+            const dbName = (url.pathname || '').replace(/^\//, '') || '(none)';
+            console.log(`MongoDB target: ${url.host} / ${dbName}`);
+        } catch {
+            // Ignore parse errors for non-standard URIs
         }
 
         const conn = await mongoose.connect(mongoURI, {
