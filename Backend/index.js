@@ -14,6 +14,34 @@ const { startCronJobs } = require('./services/CronService');
 
 const app = express();
 
+// Trust reverse proxies (Render/Vercel/etc.)
+// Needed for accurate protocol detection when behind a proxy.
+app.set('trust proxy', 1);
+
+const normalizeOrigin = (value) => {
+    if (!value) return '';
+    const trimmed = String(value).trim();
+    if (!trimmed) return '';
+
+    // If it's a full URL, normalize to its origin (protocol + host + port)
+    try {
+        const url = new URL(trimmed);
+        return url.origin;
+    } catch {
+        // Otherwise, just remove trailing slashes
+        return trimmed.replace(/\/+$/, '');
+    }
+};
+
+const getAllowedOrigins = () => {
+    // Support comma-separated allowlist for production deployments
+    const raw = process.env.FRONTEND_URLS || process.env.FRONTEND_URL || '';
+    return String(raw)
+        .split(',')
+        .map((s) => normalizeOrigin(s))
+        .filter(Boolean);
+};
+
 // Function to check if port is available
 const isPortAvailable = (port) => {
     return new Promise((resolve) => {
@@ -43,12 +71,37 @@ const findAvailablePort = async (startPort) => {
 };
 
 // Middleware
-app.use(cors({
-    origin: process.env.NODE_ENV === 'production'
-        ? [process.env.FRONTEND_URL,]
-        : ['http://localhost:3000', 'http://localhost:5173'],
-    credentials: true
-}));
+const corsOptions = {
+    origin: (origin, callback) => {
+        // Allow non-browser clients (no Origin header)
+        if (!origin) return callback(null, true);
+
+        // In development, allow local dev servers
+        if (process.env.NODE_ENV !== 'production') {
+            const allowedDev = ['http://localhost:3000', 'http://localhost:5173'];
+            return callback(null, allowedDev.includes(origin));
+        }
+
+        const allowedOrigins = getAllowedOrigins();
+
+        // If no allowlist is configured, fall back to reflecting the request origin.
+        // This avoids accidental lockouts when FRONTEND_URL isn't set.
+        if (allowedOrigins.length === 0) {
+            return callback(null, true);
+        }
+
+        const normalizedOrigin = normalizeOrigin(origin);
+        const isAllowed = allowedOrigins.includes(normalizedOrigin);
+
+        return callback(null, isAllowed);
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

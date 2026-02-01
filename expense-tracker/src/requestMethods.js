@@ -1,18 +1,25 @@
 import axios from "axios";
 
+const normalizeBaseUrl = (url) => {
+    if (!url) return url;
+    return String(url).trim().replace(/\/+$/, '');
+};
+
 // Get environment variables with fallbacks
 const getApiUrl = () => {
     // Check for explicit environment variables
     if (import.meta.env.VITE_API_URL) {
-        return import.meta.env.VITE_API_URL;
+        return normalizeBaseUrl(import.meta.env.VITE_API_URL);
     }
 
     // Fallback based on mode
     if (import.meta.env.PROD || import.meta.env.MODE === 'production') {
-        return "https://expense-tracker-i7fh.onrender.com/api/v1/";
+        // Prefer configuring `VITE_API_URL` in your hosting environment.
+        // As a safe default, try same-origin (works when you proxy /api/v1 to the backend).
+        return "/api/v1";
     }
 
-    return "http://localhost:4444/api/v1/";
+    return "http://localhost:4444/api/v1";
 };
 
 const BASE_URL = getApiUrl();
@@ -25,7 +32,8 @@ export const publicRequest = axios.create({
         'Accept': 'application/json'
     },
     validateStatus: function (status) {
-        return status < 500; // Accept all status codes less than 500
+        // Treat 4xx as errors so callers can handle them in catch blocks.
+        return status >= 200 && status < 400;
     }
 });
 
