@@ -8,7 +8,7 @@
     "trailingSlash": false,
     "build": {
         "env": {
-            "VITE_API_URL": "https://expense-tracker-smdw.onrender.com/api/v1",
+            "VITE_API_URL": "https://expense-tracker-smdw.onrender.com",
             "VITE_EMAILJS_SERVICE_ID": "service_h7zmdq7",
             "VITE_EMAILJS_TEMPLATE_ID": "template_ughgv02",
             "VITE_EMAILJS_PUBLIC_KEY": "97zV8E-1f1YviAHXh",
