@@ -121,6 +121,14 @@ const connectDB = async () => {
             if ((mongoURI.startsWith('"') && mongoURI.endsWith('"')) || (mongoURI.startsWith("'") && mongoURI.endsWith("'"))) {
                 mongoURI = mongoURI.slice(1, -1).trim();
             }
+
+            // Fail fast if someone accidentally deployed an example/placeholder URI
+            if (/<[^>]+>/.test(mongoURI)) {
+                throw new Error(
+                    'MONGODB_URI contains placeholders like <cluster_host>. ' +
+                    'Copy the exact Atlas connection string (Connect → Drivers) and set it as MONGODB_URI in your hosting environment.'
+                );
+            }
         }
 
         // Log sanitized connection info (never log the full URI)
