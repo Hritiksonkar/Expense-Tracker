@@ -5,11 +5,25 @@ const normalizeBaseUrl = (url) => {
     return String(url).trim().replace(/\/+$/, '');
 };
 
+const ensureApiV1Base = (baseUrl) => {
+    const normalized = normalizeBaseUrl(baseUrl);
+    if (!normalized) return normalized;
+
+    // If it's already a relative base, accept it
+    if (normalized.startsWith('/')) {
+        return normalized === '/api/v1' ? normalized : normalized.replace(/\/+$/, '');
+    }
+
+    // Ensure we point at the backend's mounted base path
+    if (normalized.endsWith('/api/v1')) return normalized;
+    return `${normalized}/api/v1`;
+};
+
 // Get environment variables with fallbacks
 const getApiUrl = () => {
     // Check for explicit environment variables
     if (import.meta.env.VITE_API_URL) {
-        return normalizeBaseUrl(import.meta.env.VITE_API_URL);
+        return ensureApiV1Base(import.meta.env.VITE_API_URL);
     }
 
     // Fallback based on mode
