@@ -42,6 +42,45 @@ const getAllowedOrigins = () => {
         .filter(Boolean);
 };
 
+const isOriginAllowed = (origin, allowed) => {
+    if (!origin) return true;
+
+    // Exact match first
+    const normalizedOrigin = normalizeOrigin(origin);
+    if (allowed.includes(normalizedOrigin)) return true;
+
+    // Wildcard support for common hosting preview domains.
+    // Examples:
+    // - FRONTEND_URLS=*.vercel.app
+    // - FRONTEND_URLS=https://*.vercel.app
+    // - FRONTEND_URLS=*.onrender.com
+    try {
+        const originUrl = new URL(origin);
+        const originHost = originUrl.host;
+        const originProtocol = originUrl.protocol; // includes trailing ':'
+
+        for (const entry of allowed) {
+            if (!entry.includes('*')) continue;
+
+            const trimmed = String(entry).trim();
+            const parts = trimmed.split('://');
+            const patternProtocol = parts.length === 2 ? `${parts[0]}:` : null;
+            const patternHost = parts.length === 2 ? parts[1] : trimmed;
+
+            // Only support leading wildcard patterns like *.vercel.app
+            if (!patternHost.startsWith('*.')) continue;
+            const suffix = patternHost.slice(1); // ".vercel.app"
+
+            if (patternProtocol && patternProtocol !== originProtocol) continue;
+            if (originHost.endsWith(suffix)) return true;
+        }
+    } catch {
+        // Ignore
+    }
+
+    return false;
+};
+
 // Function to check if port is available
 const isPortAvailable = (port) => {
     return new Promise((resolve) => {
@@ -90,10 +129,12 @@ const corsOptions = {
             return callback(null, true);
         }
 
-        const normalizedOrigin = normalizeOrigin(origin);
-        const isAllowed = allowedOrigins.includes(normalizedOrigin);
-
-        return callback(null, isAllowed);
+        const allowed = isOriginAllowed(origin, allowedOrigins);
+        if (!allowed) {
+            console.warn('CORS blocked origin:', origin);
+            console.warn('Allowed origins:', allowedOrigins);
+        }
+        return callback(null, allowed);
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
@@ -106,6 +147,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // MongoDB connection with better error handling
+let mongoRetryDelayMs = 5000;
+
 const connectDB = async () => {
     try {
         const rawMongoUri = process.env.MONGODB_URI || process.env.DATABASE_URL || process.env.DB;
@@ -151,17 +194,17 @@ const connectDB = async () => {
         });
 
         console.log(`Connected to MongoDB: ${conn.connection.host}`);
+        mongoRetryDelayMs = 5000;
         return conn;
     } catch (error) {
         console.error('MongoDB connection error:', error);
 
-        if (process.env.NODE_ENV !== 'production') {
-            console.log('Retrying connection in 5 seconds...');
-            setTimeout(connectDB, 5000);
-        } else {
-            console.error('Failed to connect to MongoDB in production. Exiting...');
-            process.exit(1);
-        }
+        // Do not crash-loop in production. Keep the server up (so CORS/health checks work)
+        // and retry with exponential backoff.
+        const delay = mongoRetryDelayMs;
+        mongoRetryDelayMs = Math.min(mongoRetryDelayMs * 2, 60000);
+        console.log(`Retrying MongoDB connection in ${Math.round(delay / 1000)}s...`);
+        setTimeout(connectDB, delay);
     }
 };
 
